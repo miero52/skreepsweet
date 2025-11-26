@@ -34,6 +34,18 @@ class UserSeeder extends Seeder
             ]
         );
 
+        // Pimpinan
+        User::updateOrCreate(
+            ['email' => 'pimpinan@kemenag.go.id'],
+            [
+                'name' => 'Pimpinan Kemenag',
+                'password' => Hash::make('pimpinan123'),
+                'role' => 'petugas',
+                'phone' => '08123456791',
+                'status' => 'active',
+            ]
+        );
+
         // User Masyarakat untuk testing
         User::updateOrCreate(
             ['email' => 'john@example.com'],

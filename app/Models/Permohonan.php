@@ -24,6 +24,7 @@ class Permohonan extends Model
         'tanggal_pengajuan',
         'tanggal_diproses',
         'tanggal_selesai',
+        'jenis_surat_detail',
     ];
 
     protected $casts = [

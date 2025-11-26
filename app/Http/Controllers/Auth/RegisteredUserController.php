@@ -34,6 +34,7 @@ class RegisteredUserController extends Controller
             'phone' => ['required', 'string', 'max:20'],
             'address' => ['required', 'string', 'max:500'],
             'nik' => ['required', 'string', 'size:16', 'unique:users'],
+            'ktp' => ['required', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],
         ], [
             // Custom error messages in Indonesian
             'name.required' => 'Nama lengkap wajib diisi.',
@@ -46,9 +47,15 @@ class RegisteredUserController extends Controller
             'nik.required' => 'NIK wajib diisi.',
             'nik.size' => 'NIK harus tepat 16 digit.',
             'nik.unique' => 'NIK sudah terdaftar dalam sistem.',
+
+            'ktp.required' => 'Foto KTP wajib diunggah.',
+            'ktp.image' => 'File KTP harus berupa gambar.',
+            'ktp.mimes' => 'Format KTP hanya boleh JPG atau PNG.',
+            'ktp.max' => 'Ukuran KTP maksimal 2MB.',
         ]);
 
         try {
+            $ktpPath = $request->file('ktp')->store('ktp', 'public');
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -58,6 +65,7 @@ class RegisteredUserController extends Controller
                 'address' => $request->address,
                 'nik' => $request->nik,
                 'status' => 'active',
+                'ktp' => $ktpPath,
             ]);
 
             event(new Registered($user));

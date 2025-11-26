@@ -35,8 +35,6 @@ return new class extends Migration
             $table->timestamp('tanggal_diproses')->nullable();
             $table->timestamp('tanggal_selesai')->nullable();
             $table->timestamps();
-
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
         });
     }
 

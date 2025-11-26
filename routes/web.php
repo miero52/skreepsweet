@@ -35,7 +35,7 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::middleware('role:petugas')->group(function () {
+    Route::middleware('role:masyarakat')->group(function () {
         // Profile Routes - accessible for both roles
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -58,6 +58,12 @@ Route::middleware('auth')->group(function () {
         // Export routes
         Route::get('/petugas/export-pdf', [PetugasController::class, 'exportPDF'])->name('petugas.export-pdf');
         Route::get('/petugas/laporan', [PetugasController::class, 'laporanPage'])->name('petugas.laporan');
+
+        // Manajemen User oleh Petugas (Admin Sistem)
+        Route::get('/petugas/users', [PetugasController::class, 'indexUsers'])->name('petugas.users.index');
+        Route::get('/petugas/users/{id}/edit', [PetugasController::class, 'editUser'])->name('petugas.users.edit');
+        Route::patch('/petugas/users/{id}', [PetugasController::class, 'updateUser'])->name('petugas.users.update');
+        Route::delete('/petugas/users/{id}', [PetugasController::class, 'destroyUser'])->name('petugas.users.destroy');
     });
 
     // Tambahkan di dalam middleware auth group

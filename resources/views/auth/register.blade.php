@@ -93,7 +93,7 @@
                     </div>
 
                     <!-- Registration Form -->
-                    <form method="POST" action="{{ route('register') }}" id="registrationForm">
+                    <form method="POST" action="{{ route('register') }}" id="registrationForm" enctype="multipart/form-data">
                         @csrf
 
                         <!-- Hidden role field -->
@@ -171,6 +171,24 @@
                                 @enderror
                             </div>
                         </div>
+                        <!-- Upload KTP -->
+                        <div class="mb-3">
+                            <label for="ktp" class="form-label fw-semibold">Upload Foto KTP <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-id-card text-muted"></i></span>
+                                <input type="file"
+                                    class="form-control @error('ktp') is-invalid @enderror"
+                                    id="ktp"
+                                    name="ktp"
+                                    accept="image/*"
+                                    required>
+                                @error('ktp')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <small class="text-muted">Format: JPG, PNG, maksimal 2 MB</small>
+                        </div>
+
 
                         <!-- Address -->
                         <div class="mb-3">

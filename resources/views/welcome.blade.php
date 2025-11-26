@@ -323,7 +323,7 @@
                                 <i class="fas fa-building fa-3x text-white opacity-75"></i>
                             </div>
                             <h1>SILAP</h1>
-                            <p class="subtitle">Sistem Layanan Administrasi Publik</p>
+                            <p class="subtitle">Sistem Informasi Layanan Administrasi Publik</p>
                             <p class="organization">Kementerian Agama Palembang</p>
                         </div>
 
@@ -377,7 +377,7 @@
                             </a>
                             <a href="{{ route('register') }}" class="btn-custom btn-register">
                                 <i class="fas fa-user-plus me-2"></i>
-                                Daftar Sebagai Masyarakat
+                                Daftar Akun Baru
                             </a>
                         </div>
 

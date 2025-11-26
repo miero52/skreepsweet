@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Notifications\StatusPermohonanUpdated;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use App\Models\User;
 
 
 class PetugasController extends Controller
@@ -189,5 +190,39 @@ class PetugasController extends Controller
         $filename = "Laporan_Permohonan_{$bulanNama[$bulan]}_{$tahun}.pdf";
 
         return $pdf->download($filename);
+    }
+
+    public function indexUsers()
+    {
+        $users = User::where('role', 'masyarakat')->paginate(10);
+        return view('petugas.users.index', compact('users'));
+    }
+
+    public function editUser($id)
+    {
+        $user = User::findOrFail($id);
+        return view('petugas.users.edit', compact('user'));
+    }
+
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'nik' => 'required|string|max:20',
+        ]);
+
+        $user->update($validated);
+
+        return redirect()->route('petugas.users.index')->with('success', 'Data pengguna berhasil diperbarui.');
+    }
+
+    public function destroyUser($id)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+        return redirect()->route('petugas.users.index')->with('success', 'Data pengguna berhasil dihapus.');
     }
 }

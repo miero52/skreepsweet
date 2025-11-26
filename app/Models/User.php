@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-// TAMBAHKAN IMPORT INI
 use App\Models\Permohonan;
 use App\Models\Notifikasi;
 
@@ -22,6 +21,7 @@ class User extends Authenticatable
         'address',
         'nik',
         'status',
+        'ktp',
     ];
 
     protected $hidden = [

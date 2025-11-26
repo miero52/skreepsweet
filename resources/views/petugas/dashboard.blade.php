@@ -73,24 +73,32 @@
                             <i class="fas fa-bolt text-warning me-2"></i>
                             Quick Actions
                         </h5>
-                        <p class="text-muted mb-0">Aksi cepat untuk management permohonan</p>
+
                     </div>
-                    <div class="col-md-4 text-end">
-                        <div class="btn-group">
-                            <button class="btn btn-outline-primary btn-sm" onclick="exportData()">
-                                <i class="fas fa-download me-1"></i>
-                                Export Excel
-                            </button>
-                            <a href="{{ route('petugas.laporan') }}" class="btn btn-outline-danger btn-sm">
-                                <i class="fas fa-file-pdf me-1"></i>
-                                Laporan PDF
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-start align-items-center flex-wrap gap-2 mt-2">
+                            <a href="{{ route('petugas.users.index') }}" class="btn btn-outline-dark d-flex align-items-center gap-2 px-3">
+                                <i class="fas fa-users"></i>
+                                <span>Kelola Pengguna</span>
                             </a>
-                            <button class="btn btn-outline-success btn-sm" onclick="refreshData()">
-                                <i class="fas fa-sync me-1"></i>
-                                Refresh
+
+                            <button class="btn btn-outline-primary d-flex align-items-center gap-2 px-3" onclick="exportData()">
+                                <i class="fas fa-download"></i>
+                                <span>Export Excel</span>
+                            </button>
+
+                            <a href="{{ route('petugas.laporan') }}" class="btn btn-outline-danger d-flex align-items-center gap-2 px-3">
+                                <i class="fas fa-file-pdf"></i>
+                                <span>Laporan PDF</span>
+                            </a>
+
+                            <button class="btn btn-outline-success d-flex align-items-center gap-2 px-3" onclick="refreshData()">
+                                <i class="fas fa-sync"></i>
+                                <span>Refresh</span>
                             </button>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
