@@ -82,11 +82,11 @@
                                 <span>Kelola Pengguna</span>
                             </a>
 
-                            <button class="btn btn-outline-primary d-flex align-items-center gap-2 px-3" onclick="exportData()">
+                            <!--  <button class="btn btn-outline-primary d-flex align-items-center gap-2 px-3" onclick="exportData()">
                                 <i class="fas fa-download"></i>
                                 <span>Export Excel</span>
                             </button>
-
+-->
                             <a href="{{ route('petugas.laporan') }}" class="btn btn-outline-danger d-flex align-items-center gap-2 px-3">
                                 <i class="fas fa-file-pdf"></i>
                                 <span>Laporan PDF</span>

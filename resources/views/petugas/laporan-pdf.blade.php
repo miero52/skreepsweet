@@ -6,94 +6,75 @@
     <title>Laporan Permohonan {{ $bulan }} {{ $tahun }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: "Times New Roman", serif;
             font-size: 12px;
+            line-height: 1.5;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
+        .kop-surat table {
+            width: 100%;
+            border-bottom: 3px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
 
-        .logo {
-            width: 60px;
+        .kop-logo {
+            width: 80px;
             height: auto;
         }
 
-        .title {
-            font-size: 18px;
+        .judul-instansi {
+            font-size: 16px;
             font-weight: bold;
-            margin: 10px 0;
         }
 
-        .subtitle {
-            font-size: 14px;
-            margin-bottom: 5px;
+        .alamat-instansi {
+            font-size: 12px;
+        }
+
+        .judul-laporan {
+            text-align: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+
+        .judul-laporan h2 {
+            margin: 0;
+            font-size: 18px;
+            font-weight: bold;
         }
 
         .info-box {
-            background: #f8f9fa;
-            padding: 15px;
-            margin: 20px 0;
-            border: 1px solid #dee2e6;
+            border: 1px solid #000;
+            padding: 10px;
+            margin-bottom: 20px;
         }
 
-        .stats-table {
-            width: 100%;
-            margin: 20px 0;
-            border-collapse: collapse;
-        }
-
-        .stats-table th,
-        .stats-table td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: center;
-        }
-
-        .stats-table th {
-            background: #007bff;
-            color: white;
-        }
-
+        .stats-table,
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
         }
 
+        .stats-table th,
+        .stats-table td,
         .data-table th,
         .data-table td {
-            border: 1px solid #ddd;
-            padding: 6px;
-            text-align: left;
-            font-size: 10px;
+            border: 1px solid #000;
+            padding: 5px;
         }
 
-        .data-table th {
-            background: #f8f9fa;
+        .stats-table th {
+            background: #e4e4e4;
             font-weight: bold;
-        }
-
-        .status-menunggu {
-            background: #fff3cd;
-        }
-
-        .status-diproses {
-            background: #d1ecf1;
-        }
-
-        .status-selesai {
-            background: #d4edda;
-        }
-
-        .status-ditolak {
-            background: #f8d7da;
+            text-align: center;
         }
 
         .footer {
-            margin-top: 30px;
-            font-size: 10px;
+            margin-top: 40px;
+            font-size: 11px;
+            text-align: center;
         }
 
         .page-break {
@@ -103,36 +84,58 @@
 </head>
 
 <body>
-    <!-- Header -->
-    <div class="header">
-        <h2>KEMENTERIAN AGAMA PALEMBANG</h2>
-        <div class="title">LAPORAN DATA PERMOHONAN</div>
-        <div class="subtitle">Sistem Layanan Administrasi Publik (SILAP)</div>
-        <div class="subtitle">Periode: {{ $bulan }} {{ $tahun }}</div>
+
+    <!-- === HEADER SURAT RESMI === -->
+    <div class="kop-surat">
+        <table>
+            <tr>
+                <td width="15%" align="center">
+                    <img src="{{ public_path('images/kemenag.png') }}" width="80">
+
+                </td>
+                <td width="85%" align="center">
+                    <div class="judul-instansi">
+                        KEMENTERIAN AGAMA REPUBLIK INDONESIA<br>
+                        KANTOR KEMENTERIAN AGAMA KOTA PALEMBANG
+                    </div>
+                    <div class="alamat-instansi">
+                        Jalan Jenderal Ahmad Yani 14 Ulu Palembang 30264<br>
+                        Telepon/Faksimile (0711) 511117 • Email: kotapalembang@kemenag.go.id
+                    </div>
+                </td>
+            </tr>
+        </table>
     </div>
 
-    <!-- Info Laporan -->
+    <!-- === JUDUL LAPORAN === -->
+    <div class="judul-laporan">
+        <h2>LAPORAN DATA PERMOHONAN</h2>
+        <div>Sistem Informsi Layanan Administrasi Publik (SILAP)</div>
+        <div><strong>Periode: {{ $bulan }} {{ $tahun }}</strong></div>
+    </div>
+
+    <!-- === INFORMASI LAPORAN === -->
     <div class="info-box">
-        <table style="width: 100%; border: none;">
+        <table width="100%">
             <tr>
-                <td style="border: none;"><strong>Periode:</strong> {{ $bulan }} {{ $tahun }}</td>
-                <td style="border: none;"><strong>Total Data:</strong> {{ $total }} permohonan</td>
+                <td><strong>Periode:</strong> {{ $bulan }} {{ $tahun }}</td>
+                <td><strong>Total Data:</strong> {{ $total }} permohonan</td>
             </tr>
             <tr>
-                <td style="border: none;"><strong>Tanggal Generate:</strong> {{ $generated_at }}</td>
-                <td style="border: none;"><strong>Dibuat oleh:</strong> {{ $generated_by }}</td>
+                <td><strong>Tanggal Generate:</strong> {{ $generated_at }}</td>
+                <td><strong>Dibuat oleh:</strong> {{ $generated_by }}</td>
             </tr>
             @if($filter_status)
             <tr>
-                <td style="border: none;"><strong>Filter Status:</strong> {{ ucfirst($filter_status) }}</td>
-                <td style="border: none;"></td>
+                <td><strong>Filter Status:</strong> {{ ucfirst($filter_status) }}</td>
+                <td></td>
             </tr>
             @endif
         </table>
     </div>
 
-    <!-- Statistik -->
-    <h3>Ringkasan Statistik</h3>
+    <!-- === RINGKASAN STATISTIK === -->
+    <h3 style="margin-bottom: 5px;">Ringkasan Statistik</h3>
     <table class="stats-table">
         <thead>
             <tr>
@@ -142,27 +145,27 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="status-menunggu">
+            <tr>
                 <td>Menunggu</td>
                 <td>{{ $stats['menunggu'] }}</td>
                 <td>{{ $total > 0 ? round(($stats['menunggu']/$total)*100, 1) : 0 }}%</td>
             </tr>
-            <tr class="status-diproses">
+            <tr>
                 <td>Diproses</td>
                 <td>{{ $stats['diproses'] }}</td>
                 <td>{{ $total > 0 ? round(($stats['diproses']/$total)*100, 1) : 0 }}%</td>
             </tr>
-            <tr class="status-selesai">
+            <tr>
                 <td>Selesai</td>
                 <td>{{ $stats['selesai'] }}</td>
                 <td>{{ $total > 0 ? round(($stats['selesai']/$total)*100, 1) : 0 }}%</td>
             </tr>
-            <tr class="status-ditolak">
+            <tr>
                 <td>Ditolak</td>
                 <td>{{ $stats['ditolak'] }}</td>
                 <td>{{ $total > 0 ? round(($stats['ditolak']/$total)*100, 1) : 0 }}%</td>
             </tr>
-            <tr style="background: #e9ecef; font-weight: bold;">
+            <tr style="font-weight: bold;">
                 <td>TOTAL</td>
                 <td>{{ $total }}</td>
                 <td>100%</td>
@@ -170,47 +173,50 @@
         </tbody>
     </table>
 
-    <!-- Data Detail -->
+    <!-- === DATA DETAIL PERMOHONAN === -->
     @if($permohonans->count() > 0)
-    <div class="page-break">
-        <h3>Data Detail Permohonan</h3>
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th width="5%">No</th>
-                    <th width="15%">Nomor</th>
-                    <th width="20%">Pemohon</th>
-                    <th width="15%">Jenis</th>
-                    <th width="25%">Perihal</th>
-                    <th width="12%">Tanggal</th>
-                    <th width="8%">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($permohonans as $index => $permohonan)
-                <tr class="status-{{ $permohonan->status }}">
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $permohonan->nomor_permohonan }}</td>
-                    <td>{{ $permohonan->user->name }}</td>
-                    <td>{{ str_replace('_', ' ', ucwords($permohonan->jenis_layanan)) }}</td>
-                    <td>{{ Str::limit($permohonan->perihal, 40) }}</td>
-                    <td>{{ $permohonan->created_at->format('d/m/Y') }}</td>
-                    <td>{{ ucfirst($permohonan->status) }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-        @else
-        <p style="text-align: center; margin: 50px 0; color: #6c757d;">
-            Tidak ada data permohonan untuk periode yang dipilih.
-        </p>
-        @endif
+    <div class="page-break"></div>
+    <h3>Data Detail Permohonan</h3>
 
-        <!-- Footer -->
-        <div class="footer">
-            <p>--- Laporan ini digenerate otomatis oleh Sistem SILAP ---</p>
-            <p>Kementerian Agama Palembang | {{ $generated_at }}</p>
-        </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Nomor</th>
+                <th>Pemohon</th>
+                <th>Jenis</th>
+                <th>Perihal</th>
+                <th>Tanggal</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($permohonans as $index => $permohonan)
+            <tr>
+                <td>{{ $index + 1 }}</td>
+                <td>{{ $permohonan->nomor_permohonan }}</td>
+                <td>{{ $permohonan->user->name }}</td>
+                <td>{{ str_replace('_',' ', ucwords($permohonan->jenis_layanan)) }}</td>
+                <td>{{ Str::limit($permohonan->perihal, 40) }}</td>
+                <td>{{ $permohonan->created_at->format('d/m/Y') }}</td>
+                <td>{{ ucfirst($permohonan->status) }}</td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+
+    @else
+    <p style="text-align: center; margin: 50px 0;">
+        Tidak ada data permohonan untuk periode yang dipilih.
+    </p>
+    @endif
+
+    <!-- === FOOTER === -->
+    <div class="footer">
+        <p><i>Laporan ini digenerate otomatis oleh Sistem SILAP</i></p>
+        <p>Kementerian Agama Kota Palembang</p>
+    </div>
+
 </body>
 
 </html>

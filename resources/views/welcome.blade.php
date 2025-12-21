@@ -304,6 +304,9 @@
 </head>
 
 <body>
+
+
+
     <!-- Animated Background -->
     <div class="bg-animation">
         <div class="floating-shape"></div>
@@ -325,6 +328,13 @@
                             <h1>SILAP</h1>
                             <p class="subtitle">Sistem Informasi Layanan Administrasi Publik</p>
                             <p class="organization">Kementerian Agama Palembang</p>
+                        </div>
+
+                        <!-- informasi -->
+                        <div class="text-center my-4">
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#syaratModal">
+                                Lihat Persyaratan Layanan
+                            </button>
                         </div>
 
                         <!-- Features Grid -->
@@ -406,6 +416,150 @@
             <i class="fas fa-envelope me-2"></i>info@kemenag-palembang.go.id
         </div>
     </div>
+
+
+
+    <!-- Modal Persyaratan Layanan -->
+    <div class="modal fade" id="syaratModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Daftar Persyaratan Layanan Administrasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="accordion" id="accordionSyarat">
+
+                        <!-- Surat Izin Penelitian -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#izinPenelitian">
+                                    Surat Izin Penelitian
+                                </button>
+                            </h2>
+                            <div id="izinPenelitian" class="accordion-collapse collapse" data-bs-parent="#accordionSyarat">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Surat Dari Instansi</li>
+                                        <li>Proposal Penelitian</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Surat Permohonan Rohaniwan Islam -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#rohaniIslam">
+                                    Surat Permohonan Rohaniwan Islam
+                                </button>
+                            </h2>
+                            <div id="rohaniIslam" class="accordion-collapse collapse" data-bs-parent="#accordionSyarat">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Surat Permohonan</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Surat Permohonan Rohaniwan Buddha -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#rohaniBuddha">
+                                    Surat Permohonan Rohaniwan Buddha
+                                </button>
+                            </h2>
+                            <div id="rohaniBuddha" class="accordion-collapse collapse" data-bs-parent="#accordionSyarat">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Surat Permohonan</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Surat Permohonan Rohaniwan Kristen -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#rohaniKristen">
+                                    Surat Permohonan Rohaniwan Kristen
+                                </button>
+                            </h2>
+                            <div id="rohaniKristen" class="accordion-collapse collapse" data-bs-parent="#accordionSyarat">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Surat Permohonan</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Surat Pengukuran Arah Kiblat -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#arahKiblat">
+                                    Surat Pengukuran Arah Kiblat
+                                </button>
+                            </h2>
+                            <div id="arahKiblat" class="accordion-collapse collapse" data-bs-parent="#accordionSyarat">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Surat Permohonan</li>
+                                        <li>SK Pengurus Masjid</li>
+                                        <li>Fotocopy Sertifikat Tanah Masjid</li>
+                                        <li>KTP Yang Mengurus</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Surat Izin Majelis -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#izinMajelis">
+                                    Surat Izin Majelis
+                                </button>
+                            </h2>
+                            <div id="izinMajelis" class="accordion-collapse collapse" data-bs-parent="#accordionSyarat">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Surat Permohonan</li>
+                                        <li>SK Pengurus Yang Diketahui Ketua RT</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Surat Izin Taman Pendidikan Quran -->
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#tpq">
+                                    Permohonan Izin Pendirian Taman Pendidikan Quran
+                                </button>
+                            </h2>
+                            <div id="tpq" class="accordion-collapse collapse" data-bs-parent="#accordionSyarat">
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Surat Permohonan</li>
+                                        <li>SK Pengurus</li>
+                                        <li>KTP Pengurus</li>
+                                        <li>Foto Kegiatan</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- end accordion -->
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
