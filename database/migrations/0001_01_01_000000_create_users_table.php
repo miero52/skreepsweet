@@ -22,7 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
 
             // TAMBAHAN UNTUK SISTEM SKREEPSWEET
-            $table->enum('role', ['masyarakat', 'petugas'])->default('masyarakat');
+            $table->enum('role', ['masyarakat', 'petugas', 'pimpinan'])->default('masyarakat');
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->string('nik')->nullable()->unique(); // NIK untuk masyarakat
@@ -53,12 +53,8 @@ class CreateUsersTable extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
-
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-        });
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

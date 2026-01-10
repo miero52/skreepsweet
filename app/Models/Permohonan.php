@@ -17,13 +17,17 @@ class Permohonan extends Model
         'perihal',
         'keterangan',
         'status',
+        'approval_status',
         'catatan_petugas',
+        'catatan_pimpinan',
         'processed_by',
+        'approved_by',
         'file_persyaratan',
         'file_hasil',
         'tanggal_pengajuan',
         'tanggal_diproses',
         'tanggal_selesai',
+        'tanggal_approval',
         'jenis_surat_detail',
     ];
 
@@ -32,6 +36,7 @@ class Permohonan extends Model
         'tanggal_pengajuan' => 'datetime',
         'tanggal_diproses' => 'datetime',
         'tanggal_selesai' => 'datetime',
+        'tanggal_approval' => 'datetime',
     ];
 
     // Relationships
@@ -43,6 +48,11 @@ class Permohonan extends Model
     public function petugas()
     {
         return $this->belongsTo(User::class, 'processed_by');
+    }
+
+    public function pimpinan()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
     // Auto generate nomor permohonan
@@ -60,14 +70,12 @@ class Permohonan extends Model
         $year = Carbon::now()->year;
         $month = Carbon::now()->format('m');
 
-        // Cari nomor terakhir untuk bulan dan tahun ini
         $lastPermohonan = self::whereYear('created_at', $year)
             ->whereMonth('created_at', Carbon::now()->month)
             ->orderBy('created_at', 'desc')
             ->first();
 
         if ($lastPermohonan) {
-            // Extract nomor dari nomor permohonan terakhir
             $lastNomor = $lastPermohonan->nomor_permohonan;
             $parts = explode('-', $lastNomor);
             $lastNumber = intval(end($parts));
@@ -76,18 +84,45 @@ class Permohonan extends Model
             $newNumber = 1;
         }
 
-        // Generate nomor baru dengan retry logic
         do {
             $nomorPermohonan = 'SKP-' . $year . '-' . $month . '-' . str_pad($newNumber, 3, '0', STR_PAD_LEFT);
-
-            // Cek apakah nomor sudah ada
             $exists = self::where('nomor_permohonan', $nomorPermohonan)->exists();
-
             if ($exists) {
-                $newNumber++; // Increment jika sudah ada
+                $newNumber++;
             }
         } while ($exists);
 
         return $nomorPermohonan;
+    }
+
+    // Helper method untuk cek apakah butuh approval
+    public function needsApproval()
+    {
+        return $this->status === 'diverifikasi'
+            && $this->approval_status === 'menunggu_approval';
+    }
+
+    public function isVerified()
+    {
+        return $this->status === 'diverifikasi';
+    }
+
+    public function isApproved()
+    {
+        return $this->approval_status === 'disetujui';
+    }
+
+
+    // Helper method untuk status badge
+    public function getApprovalBadge()
+    {
+        if ($this->approval_status === 'disetujui') {
+            return '<span class="badge bg-success"><i class="fas fa-check-circle"></i> Disetujui</span>';
+        } elseif ($this->approval_status === 'ditolak_pimpinan') {
+            return '<span class="badge bg-danger"><i class="fas fa-times-circle"></i> Ditolak Pimpinan</span>';
+        } elseif ($this->approval_status === 'menunggu_approval') {
+            return '<span class="badge bg-warning"><i class="fas fa-clock"></i> Menunggu Approval</span>';
+        }
+        return '<span class="badge bg-secondary">Belum Perlu Approval</span>';
     }
 }

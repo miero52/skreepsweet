@@ -4,63 +4,57 @@
 
 @section('content')
 <!-- Statistics Overview -->
-<div class="row g-4 mb-4">
-    <div class="col-lg-3 col-md-6">
-        <div class="card stat-card warning">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h3 class="fw-bold mb-1">{{ $stats['menunggu'] }}</h3>
-                    <p class="mb-0 opacity-75">Menunggu Review</p>
-                </div>
-                <div class="position-relative">
-                    <i class="fas fa-clock fa-2x opacity-75"></i>
-                </div>
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-5 g-3 mb-4">
+
+    <div class="col">
+        <div class="card stat-card warning text-center h-100">
+            <div class="card-body">
+                <h4>{{ $stats['menunggu'] }}</h4>
+                <small class="text-nowrap">Menunggu</small>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-3 col-md-6">
-        <div class="card stat-card" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h3 class="fw-bold mb-1">{{ $stats['diproses'] }}</h3>
-                    <p class="mb-0 opacity-75">Sedang Diproses</p>
-                </div>
-                <div class="position-relative">
-                    <i class="fas fa-sync-alt fa-2x opacity-75"></i>
-                </div>
+    <div class="col">
+        <div class="card stat-card info text-center h-100">
+            <div class="card-body">
+                <h4>{{ $stats['diproses'] }}</h4>
+                <small class="text-nowrap">Diproses</small>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-3 col-md-6">
-        <div class="card stat-card success">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h3 class="fw-bold mb-1">{{ $stats['selesai'] }}</h3>
-                    <p class="mb-0 opacity-75">Selesai</p>
-                </div>
-                <div class="position-relative">
-                    <i class="fas fa-check-circle fa-2x opacity-75"></i>
-                </div>
+    <div class="col">
+        <div class="card stat-card primary text-center h-100">
+            <div class="card-body">
+                <h4>{{ $stats['disetujui_pimpinan'] }}</h4>
+                <small class="text-nowrap">Disetujui Pimpinan</small>
             </div>
         </div>
     </div>
 
-    <div class="col-lg-3 col-md-6">
-        <div class="card stat-card danger">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h3 class="fw-bold mb-1">{{ $stats['ditolak'] }}</h3>
-                    <p class="mb-0 opacity-75">Ditolak</p>
-                </div>
-                <div class="position-relative">
-                    <i class="fas fa-times-circle fa-2x opacity-75"></i>
-                </div>
+    <div class="col">
+        <div class="card stat-card success text-center h-100">
+            <div class="card-body">
+                <h4>{{ $stats['selesai'] }}</h4>
+                <small class="text-nowrap">Selesai</small>
             </div>
         </div>
     </div>
+
+    <div class="col">
+        <div class="card stat-card danger text-center h-100">
+            <div class="card-body">
+                <h4>{{ $stats['ditolak'] }}</h4>
+                <small class="text-nowrap">Ditolak</small>
+            </div>
+        </div>
+    </div>
+
 </div>
+
+
+
 
 <!-- Quick Actions -->
 <div class="row mb-4">
@@ -121,6 +115,8 @@
                             <option value="">Semua Status</option>
                             <option value="menunggu">Menunggu</option>
                             <option value="diproses">Diproses</option>
+                            <option value="menunggu_approval">Menunggu Approval Pimpinan</option>
+                            <option value="disetujui_pimpinan">Disetujui Pimpinan</option>
                             <option value="selesai">Selesai</option>
                             <option value="ditolak">Ditolak</option>
                         </select>
@@ -230,27 +226,51 @@
                                 </td>
                                 <td>
                                     @switch($permohonan->status)
+
                                     @case('menunggu')
                                     <span class="badge bg-warning">
-                                        <i class="fas fa-clock me-1"></i> Menunggu
+                                        Menunggu
                                     </span>
                                     @break
+
                                     @case('diproses')
                                     <span class="badge bg-info">
-                                        <i class="fas fa-sync-alt me-1"></i> Diproses
+                                        Diproses
                                     </span>
                                     @break
+
+                                    @case('menunggu_approval')
+                                    <span class="badge bg-warning">
+                                        Menunggu Persetujuan Pimpinan
+                                    </span>
+                                    @break
+
+
+                                    @case('disetujui_pimpinan')
+                                    <span class="badge bg-primary">
+                                        Disetujui Pimpinan
+                                    </span>
+                                    @break
+
                                     @case('selesai')
                                     <span class="badge bg-success">
-                                        <i class="fas fa-check-circle me-1"></i> Selesai
+                                        Selesai
                                     </span>
                                     @break
+
                                     @case('ditolak')
                                     <span class="badge bg-danger">
-                                        <i class="fas fa-times-circle me-1"></i> Ditolak
+                                        Ditolak
                                     </span>
                                     @break
+
+                                    @default
+                                    <span class="badge bg-secondary">
+                                        {{ ucfirst($permohonan->status) }}
+                                    </span>
+
                                     @endswitch
+
                                 </td>
                                 <td>
                                     <div class="btn-group btn-group-sm">
@@ -261,7 +281,11 @@
                                             <i class="fas fa-eye"></i>
                                         </button>
 
-                                        @if($permohonan->status !== 'selesai' && $permohonan->status !== 'ditolak')
+                                        @if(
+                                        $permohonan->status !== 'selesai' &&
+                                        $permohonan->status !== 'ditolak' &&
+                                        $permohonan->approval_status !== 'ditolak_pimpinan'
+                                        )
                                         <button class="btn btn-outline-success"
                                             data-bs-toggle="modal"
                                             data-bs-target="#statusModal{{ $permohonan->id }}"
@@ -269,10 +293,11 @@
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         @else
-                                        <button class="btn btn-outline-secondary" disabled title="Sudah Diproses">
+                                        <button class="btn btn-outline-secondary" disabled title="Terkunci">
                                             <i class="fas fa-lock"></i>
                                         </button>
                                         @endif
+
                                     </div>
                                 </td>
                             </tr>
@@ -404,29 +429,61 @@
 
                             <div class="mb-3">
                                 <label class="small text-muted">Status Saat Ini</label>
+                                @if($permohonan->approval_status)
+                                <div class="mt-3">
+                                    <label class="small text-muted">Status Persetujuan Pimpinan</label>
+
+                                    @if($permohonan->approval_status === 'menunggu_approval')
+                                    <span class="badge bg-warning">Menunggu Approval</span>
+                                    @elseif($permohonan->approval_status === 'disetujui')
+                                    <span class="badge bg-success">Disetujui Pimpinan</span>
+                                    @elseif($permohonan->approval_status === 'ditolak_pimpinan')
+                                    <span class="badge bg-danger">Ditolak Pimpinan</span>
+                                    @endif
+                                </div>
+                                @endif
+
                                 <div>
                                     @switch($permohonan->status)
+
                                     @case('menunggu')
                                     <span class="badge bg-warning fs-6">
                                         <i class="fas fa-clock me-1"></i> Menunggu Verifikasi
                                     </span>
                                     @break
+
                                     @case('diproses')
                                     <span class="badge bg-info fs-6">
-                                        <i class="fas fa-sync-alt me-1"></i> Sedang Diproses
+                                        <i class="fas fa-sync-alt me-1"></i> Sedang Diproses Petugas
                                     </span>
                                     @break
+
+                                    @case('disetujui_pimpinan')
+                                    <span class="badge bg-primary fs-6">
+                                        <i class="fas fa-user-check me-1"></i> Disetujui Pimpinan
+                                    </span>
+                                    @break
+
                                     @case('selesai')
                                     <span class="badge bg-success fs-6">
                                         <i class="fas fa-check-circle me-1"></i> Selesai
                                     </span>
                                     @break
+
                                     @case('ditolak')
                                     <span class="badge bg-danger fs-6">
                                         <i class="fas fa-times-circle me-1"></i> Ditolak
                                     </span>
                                     @break
+
+                                    @default
+                                    <span class="badge bg-secondary fs-6">
+                                        {{ ucfirst($permohonan->status) }}
+                                    </span>
                                     @endswitch
+
+
+
                                 </div>
                             </div>
 
@@ -503,9 +560,23 @@
                         <label class="form-label fw-semibold">Update Status <span class="text-danger">*</span></label>
                         <select name="status" class="form-select" required onchange="toggleFileUpload(this, '{{ $permohonan->id }}')">
                             <option value="">Pilih Status</option>
-                            <option value="diproses" {{ $permohonan->status == 'diproses' ? 'selected' : '' }}>Sedang Diproses</option>
+
+                            {{-- Status DIPROSES --}}
+                            @if($permohonan->status === 'menunggu')
+                            <option value="diproses">Sedang Diproses</option>
+                            @endif
+
+                            {{-- Status SELESAI (hanya jika sudah disetujui pimpinan) --}}
+                            @if($permohonan->approval_status === 'disetujui')
                             <option value="selesai">Selesai</option>
+                            @endif
+
+                            {{-- Status DITOLAK (selama belum selesai) --}}
+                            @if($permohonan->status !== 'selesai')
                             <option value="ditolak">Ditolak</option>
+                            @endif
+
+
                         </select>
                     </div>
 

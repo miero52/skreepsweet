@@ -58,4 +58,13 @@ class User extends Authenticatable
     {
         return $this->role === 'petugas';
     }
+    public function isPimpinan()
+    {
+        return $this->role === 'pimpinan';
+    }
+
+    public function processedPermohonans()
+    {
+        return $this->hasMany(Permohonan::class, 'processed_by');
+    }
 }

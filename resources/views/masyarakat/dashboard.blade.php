@@ -33,7 +33,8 @@
         <div class="card stat-card" style="background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);">
             <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h3 class="fw-bold mb-1">{{ $permohonans->where('status', 'diproses')->count() }}</h3>
+                    <h3 class="fw-bold mb-1">{{ $permohonans->whereIn('status', ['diproses', 'disetujui_pimpinan'])->count() }}
+                    </h3>
                     <p class="mb-0 opacity-75">Diproses</p>
                 </div>
                 <i class="fas fa-sync-alt fa-2x opacity-75"></i>
@@ -131,6 +132,7 @@
                                     </span>
                                     @break
                                     @case('diproses')
+                                    @case('disetujui_pimpinan')
                                     <span class="badge bg-info">
                                         <i class="fas fa-sync-alt me-1"></i> Diproses
                                     </span>
@@ -247,6 +249,7 @@
                                     </span>
                                     @break
                                     @case('diproses')
+                                    @case('disetujui_pimpinan')
                                     <span class="badge bg-info fs-6">
                                         <i class="fas fa-sync-alt me-1"></i> Sedang Diproses
                                     </span>

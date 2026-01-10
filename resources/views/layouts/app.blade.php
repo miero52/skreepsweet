@@ -350,6 +350,19 @@
             </div>
 
             <nav class="nav flex-column mt-3">
+                @if(Auth::user()->role === 'pimpinan')
+                <a class="nav-link {{ request()->routeIs('pimpinan.dashboard') ? 'active' : '' }}"
+                    href="{{ route('pimpinan.dashboard') }}">
+                    <i class="fas fa-tachometer-alt me-2"></i>
+                    Dashboard
+                </a>
+                <a class="nav-link {{ request()->routeIs('pimpinan.monitoring') ? 'active' : '' }}"
+                    href="{{ route('pimpinan.monitoring') }}">
+                    <i class="fas fa-list me-2"></i>
+                    Monitoring
+                </a>
+
+                @endif
                 @if(Auth::user()->role === 'masyarakat')
                 <a class="nav-link {{ request()->routeIs('masyarakat.dashboard') ? 'active' : '' }}"
                     href="{{ route('masyarakat.dashboard') }}">

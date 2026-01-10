@@ -13,6 +13,8 @@ class DashboardController extends Controller
 
         if ($user->isPetugas()) {
             return redirect()->route('petugas.dashboard');
+        } elseif ($user->isPimpinan()) {
+            return redirect()->route('pimpinan.dashboard');
         } else {
             return redirect()->route('masyarakat.dashboard');
         }

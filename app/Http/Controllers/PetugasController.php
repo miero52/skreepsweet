@@ -11,24 +11,32 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use App\Models\User;
 
-
 class PetugasController extends Controller
 {
     public function dashboard()
     {
-        try {
-            $permohonans = Permohonan::with('user')->orderBy('created_at', 'desc')->get();
-            $stats = [
-                'menunggu' => Permohonan::where('status', 'menunggu')->count(),
-                'diproses' => Permohonan::where('status', 'diproses')->count(),
-                'selesai' => Permohonan::where('status', 'selesai')->count(),
-                'ditolak' => Permohonan::where('status', 'ditolak')->count(),
-            ];
+        $permohonans = Permohonan::with('user')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-            return view('petugas.dashboard', compact('permohonans', 'stats'));
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        $stats = [
+            'menunggu' => Permohonan::where('status', 'menunggu')->count(),
+
+            'diproses' => Permohonan::where('status', 'diproses')->count(),
+
+            'menunggu_approval' => Permohonan::where('approval_status', 'menunggu_approval')->count(),
+
+            'disetujui_pimpinan' => Permohonan::where('approval_status', 'disetujui')->count(),
+
+            'selesai' => Permohonan::where('status', 'selesai')->count(),
+
+            'ditolak' => Permohonan::where(function ($q) {
+                $q->where('status', 'ditolak')
+                    ->orWhere('approval_status', 'ditolak_pimpinan');
+            })->count(),
+        ];
+
+        return view('petugas.dashboard', compact('permohonans', 'stats'));
     }
 
     public function showPermohonan($id)
@@ -37,66 +45,134 @@ class PetugasController extends Controller
         return view('petugas.show-permohonan', compact('permohonan'));
     }
 
-
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
             'status' => 'required|in:diproses,selesai,ditolak',
             'catatan_petugas' => 'nullable|string',
-            'file_hasil' => 'nullable|file|mimes:pdf|max:5120', // 5MB max
+            'file_hasil' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
         $permohonan = Permohonan::findOrFail($id);
         $oldStatus = $permohonan->status;
 
-        // Handle file upload untuk status selesai
+        /*
+    |--------------------------------------------------------------------------
+    | VALIDASI ALUR STATUS (WAJIB & BERURUTAN)
+    |--------------------------------------------------------------------------
+    */
+
+        // 1. Dari MENUNGGU hanya boleh ke DIPROSES atau DITOLAK
+        if (
+            $permohonan->status === 'menunggu' &&
+            !in_array($request->status, ['diproses', 'ditolak'])
+        ) {
+            return redirect()->back()->with(
+                'error',
+                'Permohonan harus diverifikasi terlebih dahulu.'
+            );
+        }
+
+        // 2. Admin tidak boleh menyelesaikan tanpa persetujuan pimpinan
+        if (
+            $request->status === 'selesai' &&
+            $permohonan->approval_status !== 'disetujui'
+        ) {
+            return redirect()->back()->with(
+                'error',
+                'Permohonan harus disetujui pimpinan terlebih dahulu.'
+            );
+        }
+
+        // 3. Jika sudah ditolak pimpinan, tidak boleh diproses lagi
+        if ($permohonan->approval_status === 'ditolak_pimpinan') {
+            return redirect()->back()->with(
+                'error',
+                'Permohonan telah ditolak pimpinan dan tidak dapat diproses.'
+            );
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | HANDLE FILE HASIL (KHUSUS STATUS SELESAI)
+    |--------------------------------------------------------------------------
+    */
+
         $fileHasil = $permohonan->file_hasil;
+
         if ($request->hasFile('file_hasil')) {
-            // Delete old file if exists
             if ($fileHasil && file_exists(public_path('uploads/hasil/' . $fileHasil))) {
                 unlink(public_path('uploads/hasil/' . $fileHasil));
             }
 
-            // Upload new file
             $file = $request->file('file_hasil');
             $filename = 'hasil_' . $permohonan->nomor_permohonan . '_' . time() . '.pdf';
             $file->move(public_path('uploads/hasil'), $filename);
             $fileHasil = $filename;
         }
 
-        // Validate: status selesai harus ada file hasil
+        // Status selesai WAJIB upload file
         if ($request->status === 'selesai' && !$fileHasil) {
-            return redirect()->back()->with('error', 'File hasil surat wajib diupload untuk status "Selesai"');
+            return redirect()->back()->with(
+                'error',
+                'File hasil surat wajib diupload untuk status "Selesai".'
+            );
         }
 
-        $permohonan->update([
+        /*
+    |--------------------------------------------------------------------------
+    | UPDATE DATA PERMOHONAN
+    |--------------------------------------------------------------------------
+    */
+
+        $updateData = [
             'status' => $request->status,
             'catatan_petugas' => $request->catatan_petugas,
             'processed_by' => Auth::id(),
             'tanggal_diproses' => now(),
-            'tanggal_selesai' => $request->status === 'selesai' ? now() : null,
             'file_hasil' => $fileHasil,
-        ]);
+        ];
 
-        // Send notification
-        if ($oldStatus !== $request->status) {
-            try {
-                $permohonan->user->notify(new StatusPermohonanUpdated($permohonan));
-                $successMessage = 'Status berhasil diupdate dan notifikasi telah dikirim!';
-            } catch (\Exception $e) {
-                Log::error('Failed to send notification: ' . $e->getMessage());
-                $successMessage = 'Status berhasil diupdate, namun gagal mengirim email.';
-            }
-        } else {
-            $successMessage = 'Status berhasil diupdate!';
+        // Jika diproses → menunggu approval pimpinan
+        if ($request->status === 'diproses') {
+            $updateData['approval_status'] = 'menunggu_approval';
         }
 
-        return redirect()->route('petugas.dashboard')->with('success', $successMessage);
+        // Jika selesai → set tanggal selesai
+        if ($request->status === 'selesai') {
+            $updateData['tanggal_selesai'] = now();
+        }
+
+        $permohonan->update($updateData);
+
+        /*
+    |--------------------------------------------------------------------------
+    | NOTIFIKASI KE MASYARAKAT
+    |--------------------------------------------------------------------------
+    */
+
+        if ($oldStatus !== $request->status) {
+            try {
+                $permohonan->user->notify(
+                    new StatusPermohonanUpdated($permohonan)
+                );
+                $successMessage = 'Status berhasil diperbarui dan notifikasi dikirim.';
+            } catch (\Exception $e) {
+                Log::error('Gagal kirim notifikasi: ' . $e->getMessage());
+                $successMessage = 'Status diperbarui, namun notifikasi gagal dikirim.';
+            }
+        } else {
+            $successMessage = 'Status berhasil diperbarui.';
+        }
+
+        return redirect()
+            ->route('petugas.dashboard')
+            ->with('success', $successMessage);
     }
+
 
     public function laporanPage()
     {
-        // Halaman untuk memilih filter laporan
         $bulanList = [
             1 => 'Januari',
             2 => 'Februari',
@@ -120,6 +196,7 @@ class PetugasController extends Controller
 
         return view('petugas.laporan', compact('bulanList', 'tahunList'));
     }
+
     public function exportPDF(Request $request)
     {
         $request->validate([
@@ -134,7 +211,6 @@ class PetugasController extends Controller
         $status = $request->status;
         $jenis = $request->jenis;
 
-        // Query data berdasarkan filter
         $query = Permohonan::with('user')
             ->whereYear('created_at', $tahun)
             ->whereMonth('created_at', $bulan);
@@ -149,7 +225,6 @@ class PetugasController extends Controller
 
         $permohonans = $query->orderBy('created_at', 'asc')->get();
 
-        // Data untuk laporan
         $bulanNama = [
             1 => 'Januari',
             2 => 'Februari',
@@ -182,13 +257,10 @@ class PetugasController extends Controller
             'generated_by' => Auth::user()->name
         ];
 
-        // Generate PDF
         $pdf = Pdf::loadView('petugas.laporan-pdf', $data);
         $pdf->setPaper('A4', 'portrait');
 
-        // Filename
         $filename = "Laporan_Permohonan_{$bulanNama[$bulan]}_{$tahun}.pdf";
-
         return $pdf->download($filename);
     }
 

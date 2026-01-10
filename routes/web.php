@@ -6,7 +6,7 @@ use App\Http\Controllers\MasyarakatController;
 use App\Http\Controllers\PetugasController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-
+use App\Http\Controllers\PimpinanController;
 
 // Route debug - tambahkan di atas routes lain
 Route::get('/debug-auth', function () {
@@ -16,7 +16,8 @@ Route::get('/debug-auth', function () {
             'authenticated' => true,
             'user' => $user->toArray(),
             'is_petugas' => $user->isPetugas(),
-            'is_masyarakat' => $user->isMasyarakat()
+            'is_masyarakat' => $user->isMasyarakat(),
+            'is_pimpinan' => $user->isPimpinan()
         ]);
     }
     return response()->json(['authenticated' => false]);
@@ -64,6 +65,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/petugas/users/{id}/edit', [PetugasController::class, 'editUser'])->name('petugas.users.edit');
         Route::patch('/petugas/users/{id}', [PetugasController::class, 'updateUser'])->name('petugas.users.update');
         Route::delete('/petugas/users/{id}', [PetugasController::class, 'destroyUser'])->name('petugas.users.destroy');
+    });
+
+    Route::middleware('role:pimpinan')->group(function () {
+        Route::get('/pimpinan/dashboard', [PimpinanController::class, 'dashboard'])->name('pimpinan.dashboard');
+        Route::get('/pimpinan/monitoring', [PimpinanController::class, 'monitoring'])->name('pimpinan.monitoring');
+        Route::patch('/pimpinan/permohonan/{id}/approval', [PimpinanController::class, 'updateApproval'])->name('pimpinan.update-approval');
+        Route::get('/pimpinan/laporan', [PimpinanController::class, 'laporanPage'])->name('pimpinan.laporan');
+        Route::get('/pimpinan/export-laporan', [PimpinanController::class, 'exportLaporan'])->name('pimpinan.export-laporan');
+        Route::get('/pimpinan/permohonan/{id}', [PimpinanController::class, 'show'])->name('pimpinan.permohonan.show');
     });
 
     // Tambahkan di dalam middleware auth group
