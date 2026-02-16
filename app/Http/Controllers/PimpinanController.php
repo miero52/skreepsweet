@@ -124,17 +124,28 @@ class PimpinanController extends Controller
         $request->validate([
             'bulan' => 'required|integer|min:1|max:12',
             'tahun' => 'required|integer|min:2020|max:2030',
+            'status' => 'nullable|in:menunggu,diproses,selesai,ditolak',
+            'jenis' => 'nullable|in:surat_keterangan,surat_izin'
         ]);
 
         $bulan = $request->bulan;
         $tahun = $request->tahun;
+        $status = $request->status;
+        $jenis = $request->jenis;
 
-        // Query data
-        $permohonans = Permohonan::with('user')
+        $query = Permohonan::with('user')
             ->whereYear('created_at', $tahun)
-            ->whereMonth('created_at', $bulan)
-            ->orderBy('created_at', 'asc')
-            ->get();
+            ->whereMonth('created_at', $bulan);
+
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        if ($jenis) {
+            $query->where('jenis_layanan', $jenis);
+        }
+
+        $permohonans = $query->orderBy('created_at', 'asc')->get();
 
         $bulanNama = [
             1 => 'Januari',
@@ -151,26 +162,19 @@ class PimpinanController extends Controller
             12 => 'Desember'
         ];
 
-        // Statistik
-        $stats = [
-            'total' => $permohonans->count(),
-            'menunggu' => $permohonans->where('status', 'menunggu')->count(),
-            'diproses' => $permohonans->where('status', 'diproses')->count(),
-            'selesai' => $permohonans->where('status', 'selesai')->count(),
-            'ditolak' => $permohonans->where('status', 'ditolak')->count(),
-            'disetujui' => $permohonans->where('approval_status', 'disetujui')->count(),
-            'ditolak_pimpinan' => $permohonans->where('approval_status', 'ditolak_pimpinan')->count(),
-        ];
-
-        // Kinerja petugas untuk periode ini
-        $petugasStats = $this->getPetugasPerformanceByPeriod($bulan, $tahun);
-
         $data = [
             'permohonans' => $permohonans,
             'bulan' => $bulanNama[$bulan],
             'tahun' => $tahun,
-            'stats' => $stats,
-            'petugasStats' => $petugasStats,
+            'total' => $permohonans->count(),
+            'stats' => [
+                'menunggu' => $permohonans->where('status', 'menunggu')->count(),
+                'diproses' => $permohonans->where('status', 'diproses')->count(),
+                'selesai' => $permohonans->where('status', 'selesai')->count(),
+                'ditolak' => $permohonans->where('status', 'ditolak')->count(),
+            ],
+            'filter_status' => $status,
+            'filter_jenis' => $jenis,
             'generated_at' => Carbon::now()->format('d F Y, H:i:s'),
             'generated_by' => Auth::user()->name
         ];
@@ -178,7 +182,7 @@ class PimpinanController extends Controller
         $pdf = Pdf::loadView('pimpinan.laporan-pdf', $data);
         $pdf->setPaper('A4', 'portrait');
 
-        $filename = "Laporan_Pimpinan_{$bulanNama[$bulan]}_{$tahun}.pdf";
+        $filename = "Laporan_Permohonan_{$bulanNama[$bulan]}_{$tahun}.pdf";
         return $pdf->download($filename);
     }
 

@@ -119,58 +119,202 @@
 <!-- MODAL APPROVAL -->
 @foreach($needsApproval as $permohonan)
 <div class="modal fade" id="approvalModal{{ $permohonan->id }}" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header bg-primary bg-gradient text-white">
                 <h5 class="modal-title fw-bold">
+                    <i class="fas fa-clipboard-check me-2"></i>
                     Review & Approval Permohonan
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
 
             <div class="modal-body">
-                <div class="alert alert-light border">
-                    <p><strong>No Permohonan:</strong> {{ $permohonan->nomor_permohonan }}</p>
-                    <p><strong>Pemohon:</strong> {{ $permohonan->user->name }}</p>
-                    <p><strong>Perihal:</strong> {{ $permohonan->perihal }}</p>
-                    <p><strong>Petugas:</strong> {{ $permohonan->petugas->name ?? '-' }}</p>
+                <!-- Detail Permohonan Lengkap -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-8">
+                        <div class="border rounded-3 p-4">
+                            <h6 class="fw-semibold text-primary mb-3">
+                                <i class="fas fa-file-text me-2"></i>Informasi Permohonan
+                            </h6>
 
-                    @if($permohonan->catatan_petugas)
-                    <p><strong>Catatan Petugas:</strong> {{ $permohonan->catatan_petugas }}</p>
-                    @endif
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="small text-muted">Nomor Permohonan</label>
+                                    <div class="fw-semibold">{{ $permohonan->nomor_permohonan }}</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="small text-muted">Jenis Layanan</label>
+                                    <div class="fw-semibold">{{ str_replace('_', ' ', ucwords($permohonan->jenis_layanan)) }}</div>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="small text-muted">Perihal</label>
+                                    <div class="fw-semibold">{{ $permohonan->perihal }}</div>
+                                </div>
+
+                                @if($permohonan->keterangan)
+                                <div class="col-12">
+                                    <label class="small text-muted">Keterangan</label>
+                                    <div class="fw-semibold">{{ $permohonan->keterangan }}</div>
+                                </div>
+                                @endif
+
+                                <!-- Pemohon Info -->
+                                <div class="col-md-6">
+                                    <label class="small text-muted">Nama Pemohon</label>
+                                    <div class="fw-semibold">{{ $permohonan->user->name }}</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="small text-muted">Email</label>
+                                    <div class="fw-semibold">{{ $permohonan->user->email }}</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="small text-muted">No. Telepon</label>
+                                    <div class="fw-semibold">{{ $permohonan->user->phone ?? '-' }}</div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label class="small text-muted">NIK</label>
+                                    <div class="fw-semibold">{{ $permohonan->user->nik ?? '-' }}</div>
+                                </div>
+
+                                @if($permohonan->user->address)
+                                <div class="col-12">
+                                    <label class="small text-muted">Alamat</label>
+                                    <div class="fw-semibold">{{ $permohonan->user->address }}</div>
+                                </div>
+                                @endif
+                            </div>
+
+                            <!-- File Persyaratan -->
+                            @if($permohonan->file_persyaratan && count($permohonan->file_persyaratan) > 0)
+                            <div class="mt-4">
+                                <h6 class="fw-semibold text-primary mb-3">
+                                    <i class="fas fa-paperclip me-2"></i>Dokumen Persyaratan
+                                </h6>
+                                <div class="row g-2">
+                                    @foreach($permohonan->file_persyaratan as $index => $file)
+                                    <div class="col-md-6">
+                                        <div class="border rounded-3 p-3 d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <i class="fas fa-file-pdf text-danger me-2"></i>
+                                                <span class="fw-medium">{{ $file }}</span>
+                                            </div>
+                                            <a href="{{ asset('uploads/persyaratan/' . $file) }}"
+                                                target="_blank"
+                                                class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-eye me-1"></i>Lihat
+                                            </a>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+
+                            @if($permohonan->catatan_petugas)
+                            <div class="mt-4">
+                                <label class="small text-muted">Catatan Petugas</label>
+                                <div class="alert alert-info border-0 mt-2">
+                                    {{ $permohonan->catatan_petugas }}
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="border rounded-3 p-4 h-100">
+                            <h6 class="fw-semibold text-success mb-3">
+                                <i class="fas fa-tasks me-2"></i>Status & Timeline
+                            </h6>
+
+                            <div class="mb-3">
+                                <label class="small text-muted">Status Saat Ini</label>
+                                <div>
+                                    @switch($permohonan->status)
+                                    @case('diproses')
+                                    <span class="badge bg-info fs-6">
+                                        <i class="fas fa-sync-alt me-1"></i> Sedang Diproses
+                                    </span>
+                                    @break
+                                    @default
+                                    <span class="badge bg-secondary fs-6">
+                                        {{ ucfirst($permohonan->status) }}
+                                    </span>
+                                    @endswitch
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="small text-muted">Tanggal Pengajuan</label>
+                                <div class="fw-semibold">{{ $permohonan->tanggal_pengajuan->format('d M Y, H:i') }}</div>
+                            </div>
+
+                            @if($permohonan->tanggal_diproses)
+                            <div class="mb-3">
+                                <label class="small text-muted">Tanggal Diproses</label>
+                                <div class="fw-semibold">{{ $permohonan->tanggal_diproses->format('d M Y, H:i') }}</div>
+                            </div>
+                            @endif
+
+                            <div class="mb-3">
+                                <label class="small text-muted">Diproses Oleh</label>
+                                <div class="fw-semibold">{{ $permohonan->petugas->name ?? '-' }}</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- JIKA SUDAH ADA KEPUTUSAN -->
+                <!-- FORM APPROVAL -->
                 @if(in_array($permohonan->approval_status, ['disetujui','ditolak_pimpinan']))
-                <div class="alert alert-info">
+                <div class="alert alert-info border-0">
+                    <i class="fas fa-info-circle me-2"></i>
                     Permohonan ini sudah diberi keputusan.
                 </div>
                 @else
-                <!-- FORM APPROVAL (SATU-SATUNYA) -->
-                <form method="POST" action="{{ route('pimpinan.update-approval', $permohonan->id) }}">
-                    @csrf
-                    @method('PATCH')
+                <div class="border-top pt-4">
+                    <h6 class="fw-semibold text-dark mb-3">
+                        <i class="fas fa-gavel me-2"></i>Form Keputusan Pimpinan
+                    </h6>
+                    <form method="POST" action="{{ route('pimpinan.update-approval', $permohonan->id) }}">
+                        @csrf
+                        @method('PATCH')
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Keputusan</label>
-                        <select name="approval_status" class="form-select" required>
-                            <option value="">Pilih</option>
-                            <option value="disetujui">Setujui</option>
-                            <option value="ditolak_pimpinan">Tolak</option>
-                        </select>
-                    </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Keputusan <span class="text-danger">*</span></label>
+                                <select name="approval_status" class="form-select" required>
+                                    <option value="">-- Pilih Keputusan --</option>
+                                    <option value="disetujui">✓ Setujui Permohonan</option>
+                                    <option value="ditolak_pimpinan">✗ Tolak Permohonan</option>
+                                </select>
+                            </div>
 
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Catatan Pimpinan</label>
-                        <textarea name="catatan_pimpinan" class="form-control" rows="3"></textarea>
-                    </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Catatan Pimpinan</label>
+                                <textarea name="catatan_pimpinan"
+                                    class="form-control"
+                                    rows="3"
+                                    placeholder="Tambahkan catatan atau alasan keputusan..."></textarea>
+                                <small class="text-muted">Catatan akan dikirim ke petugas dan pemohon</small>
+                            </div>
+                        </div>
 
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary">
-                            Simpan Keputusan
-                        </button>
-                    </div>
-                </form>
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                <i class="fas fa-times me-1"></i>Batal
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-check me-1"></i>Simpan Keputusan
+                            </button>
+                        </div>
+                    </form>
+                </div>
                 @endif
             </div>
         </div>
